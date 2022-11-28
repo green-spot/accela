@@ -7,7 +7,8 @@ ACCELA.movePage = function(page, move){
 };
 
 ACCELA.changePageContent = function(body, pageContent){
-  body.innerHTML = pageContent;
+  body.innerHTML = "";
+  body.appendChild(pageContent);
 };
 
 

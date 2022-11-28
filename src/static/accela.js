@@ -150,7 +150,8 @@
   const movePage = (page, isFirst) => {
     if(!ACCELA.changePageContent){
       ACCELA.changePageContent = (body, pageContent) => {
-        body.innerHTML = pageContent;
+        body.innerHTML = "";
+        body.appendChild(pageContent);
       };
     }
 
