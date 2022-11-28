@@ -5,7 +5,7 @@ require_once __DIR__ . "/functions.php";
 require_once __DIR__ . "/scss.inc.php";
 
 class Accela {
-  function route($path){
+  public static function route($path){
     if($path === "/assets/site.json"){
       if(defined("SERVER_LOAD_INTERVAL")){
         header("Cache-Control: max-age=" . SERVER_LOAD_INTERVAL);
