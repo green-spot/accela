@@ -4,10 +4,6 @@ namespace Accela;
 
 class NoPagePathsError extends \Exception {}
 
-function page_paths($path, $getter){
-  PagePaths::register($path, $getter);
-}
-
 class PagePaths {
   public static $getters = [];
   public static $memo = [];

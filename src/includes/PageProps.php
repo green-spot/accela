@@ -2,10 +2,6 @@
 
 namespace Accela;
 
-function page_props($path, $getter){
-  PageProps::register($path, $getter);
-}
-
 class PageProps {
   public static $props = [];
 

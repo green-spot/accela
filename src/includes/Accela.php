@@ -52,4 +52,12 @@ class Accela {
     }
     require_once __DIR__ . "/../views/template.php";
   }
+
+  public static function page_props($path, $getter){
+    PageProps::register($path, $getter);
+  }
+
+  public static function page_paths($path, $getter){
+    PagePaths::register($path, $getter);
+  }
 }
