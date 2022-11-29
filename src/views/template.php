@@ -1,5 +1,10 @@
 <!DOCTYPE html>
+<?php if(defined('HTML_LANG')): ?>
+<html lang="<?php echo HTML_LANG; ?>">
+<?php else: ?>
 <html>
+<?php endif; ?>
+
 <head>
 <?php echo Accela\get_header_html($page); ?>
 <style class="accela-css">
