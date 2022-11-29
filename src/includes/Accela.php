@@ -35,8 +35,7 @@ class Accela {
       exit;
     }
 
-    if($path === "/accela-admin/build"){
-      require_once __DIR__ . "/classes/StaticSiteGenerator.php";
+    if($path === "/accela-admin/build" && defined("SSG_ENABLED") && SSG_ENABLED){
       StaticSiteGenerator::output();
       echo "export to `out/` directory";
       exit;
