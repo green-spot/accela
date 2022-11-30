@@ -1,5 +1,5 @@
 # Accela
-Accela is a PHP Web Framwork for SPA.
+Accela is a PHP Web Framework for SPA.
 
 ## build env
 ```
