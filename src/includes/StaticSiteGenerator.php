@@ -1,6 +1,8 @@
 <?php
 
 namespace Accela;
+require_once __DIR__ . "/functions.php";
+require_once __DIR__ . "/scss.inc.php";
 
 class StaticSiteGenerator {
   private static $time;
@@ -19,7 +21,9 @@ class StaticSiteGenerator {
     }
 
     $root = ROOT_DIR;
-    shell_exec("cp -r {$root}/assets {$dir}/assets");
+    if(file_exists("{$root}/assets")){
+      shell_exec("cp -r {$root}/assets {$dir}/assets");
+    }
     self::$time = time();
 
     foreach(Page::get_all_template_paths() as $path){
@@ -34,6 +38,7 @@ class StaticSiteGenerator {
       }
     }
 
+    mkdir("{$dir}/assets/js", 0755, true);
     self::get_page("/assets/site.json", "{$dir}/assets/site.json");
     self::get_page("/assets/js/accela.js", "{$dir}/assets/js/accela.js");
     file_put_contents("{$dir}/.htaccess", self::htaccess());
