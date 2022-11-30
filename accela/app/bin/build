@@ -6,6 +6,7 @@ namespace Accela;
 if(php_sapi_name() !== "cli") exit;
 
 require_once __DIR__ . "/../../vendor/autoload.php";
+require_once __DIR__ . "/../page-init.php";
 
 define("ROOT_DIR", __DIR__ . "/../..");
 define("APP_DIR", ROOT_DIR . "/app");
