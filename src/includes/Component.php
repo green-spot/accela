@@ -16,13 +16,13 @@ class Component {
   }
 
   public static function all() {
-    function walk($dir, &$components=[]){
+    $walk = function($dir, &$components=[])use(&$walk){
       foreach(scandir($dir) as $file){
         if(in_array($file, [".", ".."])) continue;
 
         $file_path = $dir . $file;
         if(is_dir($file_path)){
-          walk("{$file_path}/", $components);
+          $walk("{$file_path}/", $components);
 
         }else if(is_file($file_path) && preg_match("@.*\\.html$@", $file)){
           $path = str_replace(".html", "", $file_path);
@@ -32,8 +32,8 @@ class Component {
       }
 
       return $components;
-    }
+    };
 
-    return walk(APP_DIR ."/components/");
+    return $walk(APP_DIR ."/components/");
   }
 }

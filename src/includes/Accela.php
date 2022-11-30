@@ -20,7 +20,7 @@ class Accela {
         ];
       }, Page::all());
       echo json_encode($pages);
-      exit;
+      return;
     }
 
     if($path === "/assets/js/accela.js"){
@@ -32,16 +32,17 @@ class Accela {
       echo file_get_contents(__DIR__ . "/../static/modules.js");
       echo file_get_contents(APP_DIR . "/script.js");
       echo file_get_contents(__DIR__ . "/../static/accela.js");
-      exit;
+      return;
     }
 
     if($path === "/accela-admin/build" && defined("SSG_ENABLED") && SSG_ENABLED){
       StaticSiteGenerator::output();
       echo "export to `out/` directory";
-      exit;
+      return;
     }
 
-    $path_info = el($_SERVER, "PATH_INFO", "/");
+    // $path_info = el($_SERVER, "PATH_INFO", "/");
+    $path_info = $path;
 
     try{
       $page = new Page($path_info);
@@ -49,7 +50,7 @@ class Accela {
       $page = new Page("/404");
       http_response_code(404);
     }
-    require_once __DIR__ . "/../views/template.php";
+    require __DIR__ . "/../views/template.php";
   }
 
   public static function page_props($path, $getter){

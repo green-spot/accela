@@ -43,15 +43,10 @@ class StaticSiteGenerator {
     $dir_path = dirname($file_path);
     if(!is_dir($dir_path)) mkdir($dir_path, 0755, true);
 
-    $protocol = el($_SERVER, "REQUEST_SCHEME");
-    $host = el($_SERVER, "HTTP_HOST", "localhost");
-
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "{$protocol}://{$host}{$path}?__t=f".self::$time);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    file_put_contents($file_path, curl_exec($ch));
-    curl_close($ch);
+    ob_start();
+    Accela::route($path);
+    file_put_contents($file_path, ob_get_contents());
+    ob_end_clean();
   }
 
   private static function clear_dir($dir){
