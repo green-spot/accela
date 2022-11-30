@@ -167,9 +167,11 @@
         let isDynamicTags = false;
 
         tags.forEach(o => {
-          if(o.getAttribute("name") === "accela-separator") isDynamicTags = true;
+          if(o.getAttribute("name") === "accela-separator"){
+            isDynamicTags = true;
+            return;
+          }
           if(!isDynamicTags) return;
-
           if(o.classList.contains("accela-css")) return;
           o.remove();
         });
