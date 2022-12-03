@@ -39,6 +39,8 @@ class Page {
     }
 
     $content = file_get_contents($abs_file_path);
+    $content = preg_replace("/^[\\s\\t]+/mu", "", $content);
+    $content = preg_replace("/\\n+/mu", "\n", $content);
     $this->initialize($path, $content);
     $this->is_dynamic = false;
   }

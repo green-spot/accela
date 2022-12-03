@@ -13,6 +13,8 @@ class Component {
     }
 
     $this->content = file_get_contents($abs_file_path);
+    $this->content = preg_replace("/^[\\s\\t]+/mu", "", $this->content);
+    $this->content = preg_replace("/\\n+/mu", "\n", $this->content);
   }
 
   public static function all() {
