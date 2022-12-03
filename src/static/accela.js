@@ -132,7 +132,8 @@
       this.object = (o => {
         o.setAttribute("data-name", name);
         o.innerHTML = component;
-        o.querySelector("[data-contents]").setAttribute("data-contents", name);
+        const contentsArea = o.querySelector("[data-contents]");
+        if(contentsArea) contentsArea.setAttribute("data-contents", name);
 
         return o;
       })(document.createElement("accela:component"));
