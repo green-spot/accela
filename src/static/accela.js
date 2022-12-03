@@ -15,7 +15,7 @@
 
       content.querySelectorAll("[data-bind]").forEach(o => {
         o.getAttribute("data-bind").split(",").forEach(function(set){
-          const [prop, variable] = set.split(":");
+          let [prop, variable] = set.split(":");
           if(!variable) variable = prop;
           o.setAttribute(prop, props[variable]);
         });
