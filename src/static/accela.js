@@ -26,7 +26,7 @@
       });
 
       content.querySelectorAll("[data-bind-text]").forEach(o => {
-        o.innerText = props[o.getAttribute("data-bind-text")];
+        o.textContent = props[o.getAttribute("data-bind-text")];
       });
     },
 
