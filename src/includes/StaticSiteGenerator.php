@@ -38,7 +38,7 @@ class StaticSiteGenerator {
       }
     }
 
-    mkdir("{$dir}/assets/js", 0755, true);
+    if(!file_exists("{$dir}/assets/js")) mkdir("{$dir}/assets/js", 0755, true);
     self::get_page("/assets/site.json", "{$dir}/assets/site.json");
     self::get_page("/assets/js/accela.js", "{$dir}/assets/js/accela.js");
     file_put_contents("{$dir}/.htaccess", self::htaccess());
