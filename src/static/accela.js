@@ -148,7 +148,7 @@
     components[name] = new Component(name, component);
   });
 
-  const movePage = (page, isFirst) => {
+  const movePage = (page, hash, isFirst) => {
     if(!ACCELA.changePageContent){
       ACCELA.changePageContent = (body, pageContent) => {
         body.innerHTML = "";
@@ -194,12 +194,13 @@
     }else{
       ACCELA.movePage ? ACCELA.movePage(pageContent, move) : move();
     }
+    setTimeout(() => location.hash = hash, 100);
   };
 
   const firstPage = new Page(ACCELA.entrance_page);
   firstPage.content.applyComponents(components);
 
-  movePage(firstPage, true);
+  movePage(firstPage, location.hash, true);
 
 
   const res = await fetch(`/assets/site.json?__t=${ACCELA.utime}`);
@@ -221,9 +222,12 @@
     if(!site[path]) return true;
 
     e.preventDefault();
-    if(path === location.pathname) return false;
+    if(path === location.pathname){
+      location.hash = url.hash;
+      return false;
+    }
 
-    movePage(site[path]);
+    movePage(site[path], url.hash);
     history.pushState(null, null, path);
 
     return false;
@@ -231,6 +235,6 @@
 
   window.onpopstate = (e) => {
     if(e.originalEvent && !e.originalEvent.state) return;
-    movePage(site[location.pathname]);
+    movePage(site[location.pathname], location.hash);
   };
 })();
