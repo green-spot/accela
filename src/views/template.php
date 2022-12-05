@@ -4,7 +4,6 @@
 <?php else: ?>
 <html>
 <?php endif; ?>
-
 <head>
 <?php echo Accela\get_header_html($page); ?>
 <style class="accela-css">

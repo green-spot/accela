@@ -2,7 +2,7 @@
  * Accela
  */
 
-(async function(){
+(async () => {
   const utils = {
     str2DOM: (str, wrapTagName="div") => {
       const dom = document.createElement(wrapTagName);
@@ -14,7 +14,7 @@
       if(typeof props === "undefined") throw new Error("props is undefined");
 
       content.querySelectorAll("[data-bind]").forEach(o => {
-        o.getAttribute("data-bind").split(",").forEach(function(set){
+        o.getAttribute("data-bind").split(",").forEach((set) => {
           let [prop, variable] = set.split(":");
           if(!variable) variable = prop;
           o.setAttribute(prop, props[variable]);

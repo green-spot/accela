@@ -35,12 +35,6 @@ class Accela {
       return;
     }
 
-    if($path === "/accela-admin/build" && defined("SSG_ENABLED") && SSG_ENABLED){
-      StaticSiteGenerator::output();
-      echo "export to `out/` directory";
-      return;
-    }
-
     // $path_info = el($_SERVER, "PATH_INFO", "/");
     $path_info = $path;
 

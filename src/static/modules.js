@@ -1,6 +1,6 @@
 ACCELA.modules.markdown = (object) => object.innerHTML = marked(object.innerHTML);
 
-ACCELA.modules.unescape_markdown = (() => {
+ACCELA.modules.unescapeMarkdown = (() => {
   const patterns = {
     '&lt;'   : '<',
     '&gt;'   : '>',
