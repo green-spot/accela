@@ -17,7 +17,7 @@
         o.getAttribute("data-bind").split(",").forEach((set) => {
           let [prop, variable] = set.split(":");
           if(!variable) variable = prop;
-          o.setAttribute(prop, props[variable]);
+          o.setAttribute(prop, typeof props[variable] === "string" ? props[variable] : JSON.stringify(props[variable]));
         });
       });
 
