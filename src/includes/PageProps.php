@@ -4,6 +4,7 @@ namespace Accela;
 
 class PageProps {
   public static $props = [];
+  public static $global_props = null;
 
   public static function get($path, $query=null){
     if(!el(self::$props, $path)) return [];
@@ -12,5 +13,9 @@ class PageProps {
 
   public static function register($path, $getter){
     self::$props[$path] = $getter;
+  }
+
+  public static function register_global($getter){
+    self::$global_props = $getter();
   }
 }

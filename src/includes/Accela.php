@@ -47,6 +47,11 @@ class Accela {
     require __DIR__ . "/../views/template.php";
   }
 
+  public static function global_props($getter){
+    PageProps::register_global($getter);
+  }
+
+
   public static function page_props($path, $getter){
     PageProps::register($path, $getter);
   }

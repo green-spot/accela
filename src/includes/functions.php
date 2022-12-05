@@ -18,12 +18,13 @@ namespace Accela {
 
   function get_initial_data($page){
     return [
-      "entrance_page" => [
+      "entrancePage" => [
         "path" => $page->path,
         "head" => $page->head,
         "content" => $page->body,
         "props" => $page->props
       ],
+      "globalProps" => PageProps::$global_props,
       "components" => get_components(),
       "utime" => get_utime()
     ];

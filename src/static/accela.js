@@ -2,7 +2,7 @@
  * Accela
  */
 
-(async () => {
+(async function(){
   const utils = {
     str2DOM: (str, wrapTagName="div") => {
       const dom = document.createElement(wrapTagName);
@@ -14,10 +14,16 @@
       if(typeof props === "undefined") throw new Error("props is undefined");
 
       content.querySelectorAll("[data-bind]").forEach(o => {
-        o.getAttribute("data-bind").split(",").forEach((set) => {
+        o.getAttribute("data-bind").split(",").forEach(function(set){
           let [prop, variable] = set.split(":");
           if(!variable) variable = prop;
-          o.setAttribute(prop, typeof props[variable] === "string" ? props[variable] : JSON.stringify(props[variable]));
+
+          const val = (() => {
+            let val = props[variable];
+            if(typeof val === "undefined") val = ACCELA.globalProps[variable];
+            return typeof val === "string" ? val : JSON.stringify(val);
+          })()
+          o.setAttribute(prop, val);
         });
       });
 
@@ -197,7 +203,7 @@
     setTimeout(() => location.hash = hash, 100);
   };
 
-  const firstPage = new Page(ACCELA.entrance_page);
+  const firstPage = new Page(ACCELA.entrancePage);
   firstPage.content.applyComponents(components);
 
   movePage(firstPage, location.hash, true);
