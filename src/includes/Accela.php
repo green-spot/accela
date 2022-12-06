@@ -35,6 +35,10 @@ class Accela {
       return;
     }
 
+    if(preg_match("@/api/(.+)$@", $path, $m)){
+      if(API::route($m[1])) return;
+    }
+
     // $path_info = el($_SERVER, "PATH_INFO", "/");
     $path_info = $path;
 
@@ -47,10 +51,17 @@ class Accela {
     require __DIR__ . "/../views/template.php";
   }
 
+  public static function api($path, $callback){
+    API::register($path, $callback);
+  }
+
+  public static function api_paths($dynamic_path, $paths){
+    API::register_paths($dynamic_path, $paths);
+  }
+
   public static function global_props($getter){
     PageProps::register_global($getter);
   }
-
 
   public static function page_props($path, $getter){
     PageProps::register($path, $getter);

@@ -38,6 +38,11 @@ class StaticSiteGenerator {
       }
     }
 
+    foreach(API::get_all_paths() as $path){
+      $file_path = "{$dir}/api/{$path}";
+      self::get_page("/api/{$path}", $file_path);
+    }
+
     if(!file_exists("{$dir}/assets/js")) mkdir("{$dir}/assets/js", 0755, true);
     self::get_page("/assets/site.json", "{$dir}/assets/site.json");
     self::get_page("/assets/js/accela.js", "{$dir}/assets/js/accela.js");
