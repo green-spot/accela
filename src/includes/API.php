@@ -16,7 +16,7 @@ class API {
 
       $path_regexp = preg_replace('/(\[.+?\])/', '(.+?)', $_path);
       if(preg_match("@{$path_regexp}@", $path, $matches)){
-        if(in_array($path, self::$paths_list[$_path])){
+        if(in_array($path, self::$paths_list[$_path]())){
           self::response_header($path);
           $callback(API::build_query($_path, $matches));
           return true;
@@ -45,8 +45,8 @@ class API {
       if(strpos($path, "[") === FALSE) $paths[] = $path;
     }
 
-    foreach(self::$paths_list as $_ => $_paths){
-      $paths = array_merge($paths, $_paths);
+    foreach(self::$paths_list as $_ => $get_paths){
+      $paths = array_merge($paths, $get_paths());
     }
 
     return $paths;
@@ -71,7 +71,11 @@ class API {
     self::$map[$path] = $callback;
   }
 
-  public static function register_paths($dynamic_path, $callback){
-    self::$paths_list[$dynamic_path] = $callback();
+  public static function register_paths($dynamic_path, $get_paths){
+    self::$paths_list[$dynamic_path] = function()use($get_paths){
+      static $memo;
+      if(!$memo) $memo = $get_paths();
+      return $memo;
+    };
   }
 }
