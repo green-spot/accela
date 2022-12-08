@@ -16,11 +16,9 @@ class API {
 
       $path_regexp = preg_replace('/(\[.+?\])/', '(.+?)', $_path);
       if(preg_match("@{$path_regexp}@", $path, $matches)){
-        if(in_array($path, self::$paths_list[$_path]())){
-          self::response_header($path);
-          $callback(API::build_query($_path, $matches));
-          return true;
-        }
+        self::response_header($path);
+        $callback(API::build_query($_path, $matches));
+        return true;
       }
     }
 
