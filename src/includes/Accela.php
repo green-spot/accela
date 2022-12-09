@@ -70,4 +70,8 @@ class Accela {
   public static function page_paths($path, $getter){
     PagePaths::register($path, $getter);
   }
+
+  public static function get_global_prop($key){
+    return PageProps::$global_props[$key];
+  }
 }
