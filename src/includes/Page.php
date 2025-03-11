@@ -5,9 +5,7 @@ namespace Accela;
 class PageNotFoundError extends \Exception {}
 
 class Page {
-  static $scss;
-
-  public $path, $head, $body, $style, $props;
+  public $path, $head, $body, $props, $is_dynamic;
 
   public function __construct($path){
     if(preg_match("@\\[.+\\]@", $path)){
@@ -50,11 +48,6 @@ class Page {
     $this->head = preg_replace("@^.*<head>[\s\t\n]*(.+?)[\s\t\n]*</head>.*$@s", '$1', $content);
     $this->head = preg_replace("@[ \t]+<@", "<", $this->head);
     $this->body = preg_replace("@^.*<body>[\s\t\n]*(.+?)[\s\t\n]*</body>.*$@s", '$1', $content);
-
-    $this->style = "";
-    if(preg_match("@<style>.+?</style>@s", $content)){
-      $this->style = preg_replace("@^.*<style>[\s\t\n]*(.+?)[\s\t\n]*</style>.*$@s", '$1', $content);
-    }
 
     // get PageProps
     if($static_path){
@@ -101,11 +94,6 @@ class Page {
     }
 
     return $html;
-  }
-
-  public function get_css(){
-    $css = "[data-page-path='{$this->path}']{{$this->style}}";
-    return trim(Page::$scss->compile($css));
   }
 
   public static function get_dynamic_path($static_path){
@@ -179,5 +167,3 @@ class Page {
     return $paths;
   }
 }
-
-Page::$scss = new \scssc();

@@ -2,7 +2,6 @@
 
 namespace Accela;
 require_once __DIR__ . "/functions.php";
-require_once __DIR__ . "/scss.inc.php";
 
 class Accela {
   public static function route($path){
