@@ -4,16 +4,16 @@ namespace Accela;
 require_once __DIR__ . "/functions.php";
 
 class StaticSiteGenerator {
-  private static $time;
+  private static int $time;
 
-  public static function output(){
+  public static function output(): void {
     $dir = ROOT_DIR . "/out";
 
     if(is_file($dir)){
       throw new \Exception("ディレクトリが作成できません。");
 
     }else if(file_exists($dir)){
-      self::clear_dir($dir);
+      self::clearDir($dir);
 
     }else{
       mkdir($dir);
@@ -25,30 +25,30 @@ class StaticSiteGenerator {
     }
     self::$time = time();
 
-    foreach(Page::get_all_template_paths() as $path){
-      if(is_dynamic_path($path)){
+    foreach(Page::getAllTemplatePaths() as $path){
+      if(isDynamicPath($path)){
         foreach(PagePaths::get($path) as $_path){
           $file_path = "{$dir}{$_path}" . (preg_match("@.*/$@", $_path) ? "index.html" : ".html");
-          self::get_page($_path, $file_path);
+          self::getPage($_path, $file_path);
         }
       }else{
         $file_path = "{$dir}{$path}" . (preg_match("@.*/$@", $path) ? "index.html" : ".html");
-        self::get_page($path, $file_path);
+        self::getPage($path, $file_path);
       }
     }
 
-    foreach(API::get_all_paths() as $path){
+    foreach(API::getAllPaths() as $path){
       $file_path = "{$dir}/api/{$path}";
-      self::get_page("/api/{$path}", $file_path);
+      self::getPage("/api/{$path}", $file_path);
     }
 
     if(!file_exists("{$dir}/assets/js")) mkdir("{$dir}/assets/js", 0755, true);
-    self::get_page("/assets/site.json", "{$dir}/assets/site.json");
-    self::get_page("/assets/js/accela.js", "{$dir}/assets/js/accela.js");
+    self::getPage("/assets/site.json", "{$dir}/assets/site.json");
+    self::getPage("/assets/js/accela.js", "{$dir}/assets/js/accela.js");
     file_put_contents("{$dir}/.htaccess", self::htaccess());
   }
 
-  private static function get_page($path, $file_path){
+  private static function getPage(string $path, string $file_path): void {
     $dir_path = dirname($file_path);
     if(!is_dir($dir_path)) mkdir($dir_path, 0755, true);
 
@@ -58,7 +58,7 @@ class StaticSiteGenerator {
     ob_end_clean();
   }
 
-  private static function clear_dir($dir){
+  private static function clearDir(string $dir): bool {
     $result = true;
 
     $iter = new \RecursiveIteratorIterator(
@@ -73,10 +73,11 @@ class StaticSiteGenerator {
         $result &= unlink($file->getPathname());
       }
     }
-    return $result;
+
+    return !!$result;
   }
 
-  private static function htaccess(){
+  private static function htaccess(): string {
     return <<<S
 RewriteEngine on
 RewriteCond %{THE_REQUEST} ^.*/index.html

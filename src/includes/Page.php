@@ -5,9 +5,11 @@ namespace Accela;
 class PageNotFoundError extends \Exception {}
 
 class Page {
-  public $path, $head, $body, $props, $is_dynamic;
+  public string $path, $head, $body;
+  public array $props;
+  public bool $is_dynamic;
 
-  public function __construct($path){
+  public function __construct(string $path){
     if(preg_match("@\\[.+\\]@", $path)){
       $path = "/404";
     }
@@ -21,7 +23,7 @@ class Page {
 
     if(!is_file($abs_file_path)){
       $static_path = $path;
-      $dynamic_path = Page::get_dynamic_path($static_path);
+      $dynamic_path = Page::getDynamicPath($static_path);
 
       if($dynamic_path){
         $file_path = $dynamic_path . (substr($dynamic_path, -1) === "/" ? "index.html" : ".html");
@@ -43,7 +45,7 @@ class Page {
     $this->is_dynamic = false;
   }
 
-  public function initialize($path, $content, $static_path=null){
+  public function initialize(string $path, string $content, string|null $static_path=null): void {
     $this->path = $path;
     $this->head = preg_replace("@^.*<head>[\s\t\n]*(.+?)[\s\t\n]*</head>.*$@s", '$1', $content);
     $this->head = preg_replace("@[ \t]+<@", "<", $this->head);
@@ -68,11 +70,11 @@ class Page {
     }
 
     // eval ServerComponent
-    $this->head = $this->evaluate_server_component($this->head, $this->props);
-    $this->body = $this->evaluate_server_component($this->body, $this->props);
+    $this->head = $this->evaluateServerComponent($this->head, $this->props);
+    $this->body = $this->evaluateServerComponent($this->body, $this->props);
   }
 
-  public function evaluate_server_component($html, $page_props){
+  public function evaluateServerComponent(string $html, array $page_props): string {
     preg_match_all('@(<server-component\s+(.+?)>(.*?)</server-component>)@ms', $html, $m);
     foreach($m[1] as $i => $tag){
       $props_string = $m[2][$i];
@@ -96,13 +98,14 @@ class Page {
     return $html;
   }
 
-  public static function get_dynamic_path($static_path){
+  public static function getDynamicPath(string $static_path): string | null {
     static $memo;
     if(!$memo) $memo = [];
+
     if(!isset($memo[$static_path])){
       $memo[$static_path] = null;
 
-      foreach(self::get_all_template_paths() as $path){
+      foreach(self::getAllTemplatePaths() as $path){
         if(strpos($path, "[") !== false){
           $re = preg_replace("@(\\[.+?\\])@s", "[^/]+?", $path);
           if(preg_match("@{$re}@", $path)){
@@ -119,12 +122,15 @@ class Page {
     return $memo[$static_path];
   }
 
-  public static function all(){
+  /**
+   * @return Page[]
+   */
+  public static function all(): array {
     static $pages;
     if(!$pages){
       $pages = [];
 
-      foreach(self::get_all_template_paths() as $path){
+      foreach(self::getAllTemplatePaths() as $path){
         if(preg_match("@\\[.+\\]@", $path)){
           foreach(PagePaths::get($path) as $_path){
             $pages[$_path] = new Page($_path);
@@ -140,8 +146,12 @@ class Page {
     return $pages;
   }
 
-  public static function get_all_template_paths(){
+  /**
+   * @return string[]
+   */
+  public static function getAllTemplatePaths(): array {
     static $paths;
+
     if(!$paths){
       $walk = function($dir, &$paths=[])use(&$walk){
         foreach(scandir($dir) as $file){

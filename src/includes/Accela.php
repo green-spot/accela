@@ -4,10 +4,10 @@ namespace Accela;
 require_once __DIR__ . "/functions.php";
 
 class Accela {
-  public static function route($path){
+  public static function route(string $path): void {
     if($path === "/assets/site.json"){
       if(defined("SERVER_LOAD_INTERVAL")){
-        header("Cache-Control: max-age=" . SERVER_LOAD_INTERVAL);
+        header("Cache-Control: max-age=" . constant("SERVER_LOAD_INTERVAL"));
       }
       header("Content-Type: application/json");
       $pages = array_map(function($page){
@@ -24,7 +24,7 @@ class Accela {
 
     if($path === "/assets/js/accela.js"){
       if(defined("SERVER_LOAD_INTERVAL")){
-        header("Cache-Control: max-age=" . SERVER_LOAD_INTERVAL);
+        header("Cache-Control: max-age=" . constant("SERVER_LOAD_INTERVAL"));
       }
       header("Content-Type: text/javascript");
       echo file_get_contents(__DIR__ . "/../static/marked.min.js");
@@ -47,30 +47,32 @@ class Accela {
       $page = new Page("/404");
       http_response_code(404);
     }
+
     require __DIR__ . "/../views/template.php";
   }
 
-  public static function api($path, $callback){
+  public static function api(string $path, callable $callback): void {
     API::register($path, $callback);
   }
 
-  public static function api_paths($dynamic_path, $paths){
-    API::register_paths($dynamic_path, $paths);
+  public static function apiPaths(string $dynamic_path, callable $get_paths): void {
+    API::registerPaths($dynamic_path, $get_paths);
   }
 
-  public static function global_props($getter){
-    PageProps::register_global($getter);
+  public static function globalProps(callable $getter): void {
+    PageProps::registerGlobal($getter);
   }
 
-  public static function page_props($path, $getter){
+  public static function getGlobalProp(string $key): mixed {
+    return PageProps::$global_props[$key];
+  }
+
+  public static function pageProps(string $path, callable $getter): void {
     PageProps::register($path, $getter);
   }
 
-  public static function page_paths($path, $getter){
+  public static function pagePaths(string $path, callable $getter): void {
     PagePaths::register($path, $getter);
   }
 
-  public static function get_global_prop($key){
-    return PageProps::$global_props[$key];
-  }
 }

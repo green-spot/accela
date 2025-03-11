@@ -1,7 +1,13 @@
 <?php
 
 namespace Accela {
-  function el($object, $key, $default=null){
+  /**
+   * @param array | object $object
+   * @param string $key
+   * @param mixed $default
+   * @return mixed
+   */
+  function el(mixed $object, string $key, mixed $default=null): mixed {
     if(is_array($object)){
       return isset($object[$key]) ? $object[$key] : $default;
     }else{
@@ -9,14 +15,14 @@ namespace Accela {
     }
   }
 
-  function get_utime(){
+  function getUtime(): string {
     $now = time();
-    if(defined("SERVER_LOAD_INTERVAL")) $now = $now - ($now % SERVER_LOAD_INTERVAL);
+    if(defined("SERVER_LOAD_INTERVAL")) $now = $now - ($now % constant("SERVER_LOAD_INTERVAL"));
 
-    return el($_GET, "__t", $now);
+    return el($_GET, "__t", "{$now}");
   }
 
-  function get_initial_data($page){
+  function getInitialData(Page $page): array {
     return [
       "entrancePage" => [
         "path" => $page->path,
@@ -25,12 +31,15 @@ namespace Accela {
         "props" => $page->props
       ],
       "globalProps" => PageProps::$global_props,
-      "components" => get_components(),
-      "utime" => get_utime()
+      "components" => getComponents(),
+      "utime" => getUtime()
     ];
   }
 
-  function get_components(){
+  /**
+   * @return Component[]
+   */
+  function getComponents(): array {
     $components = [];
     foreach(Component::all() as $name => $component){
       $components[$name] = $component->content;
@@ -38,21 +47,21 @@ namespace Accela {
     return $components;
   }
 
-  function get_header_html($page){
+  function getHeaderHtml(Page $page): string{
     $common_page = PageCommon::instance();
     $separator = "\n<meta name=\"accela-separator\">\n";
     return $common_page->head . $separator . $page->head;
   }
 
-  function is_dynamic_path($path){
-    return preg_match("@\\[.+?\\]@", $path);
+  function isDynamicPath(string $path): bool {
+    return !!preg_match("@\\[.+?\\]@", $path);
   }
 
-  function capture($callback){
+  function capture(callable $callback): string {
     ob_start();
     $callback();
     $output = ob_get_contents();
     ob_end_clean();
-    return $output;
+    return $output ?: "";
   }
 }

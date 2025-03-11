@@ -5,20 +5,25 @@ namespace Accela;
 class ComponentNotFoundError extends \Exception {}
 
 class Component {
-  public function __construct($component_name){
+  public string $content;
+
+  public function __construct(string $component_name){
     $abs_file_path = APP_DIR . "/components/{$component_name}.html";
 
     if(!is_file($abs_file_path)){
       throw new ComponentNotFoundError("'{$abs_file_path}' component not founds.");
     }
 
-    $this->content = file_get_contents($abs_file_path);
-    $this->content = preg_replace("/^[\\s\\t]+/mu", "", $this->content);
-    $this->content = preg_replace("/\\n+/mu", "\n", $this->content);
+    $content = file_get_contents($abs_file_path);
+    $content = preg_replace("/^[\\s\\t]+/mu", "", $content);
+    $this->content = preg_replace("/\\n+/mu", "\n", $content);
   }
 
-  public static function all() {
-    $walk = function($dir, &$components=[])use(&$walk){
+  /**
+   * @return Component[]
+   */
+  public static function all(): array {
+    $walk = function(string $dir, array &$components=[])use(&$walk): array {
       foreach(scandir($dir) as $file){
         if(in_array($file, [".", ".."])) continue;
 

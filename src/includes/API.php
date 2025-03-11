@@ -3,21 +3,21 @@
 namespace Accela;
 
 class API {
-  public static $map = [];
-  public static $paths_list = [];
+  public static array $map = [];
+  public static array $paths_list = [];
 
-  public static function route($path){
+  public static function route(string $path): bool {
     foreach(self::$map as $_path => $callback){
       if($path === $_path){
-        self::response_header($path);
+        self::responseHeader($path);
         $callback();
         return true;
       }
 
       $path_regexp = preg_replace('/(\[.+?\])/', '(.+?)', $_path);
       if(preg_match("@{$path_regexp}@", $path, $matches)){
-        self::response_header($path);
-        $callback(API::build_query($_path, $matches));
+        self::responseHeader($path);
+        $callback(API::buildQuery($_path, $matches));
         return true;
       }
     }
@@ -25,7 +25,7 @@ class API {
     return false;
   }
 
-  public static function build_query($path, $matches){
+  public static function buildQuery(string $path, array $matches): array {
     $query = [];
 
     preg_match_all('@\[([a-z]+)\]@', $path, $m);
@@ -36,7 +36,7 @@ class API {
     return $query;
   }
 
-  public static function get_all_paths(){
+  public static function getAllPaths(): array {
     $paths = [];
 
     foreach(self::$map as $path => $_){
@@ -50,7 +50,7 @@ class API {
     return $paths;
   }
 
-  public static function response_header($path){
+  public static function responseHeader(string $path): void {
     preg_match('/\.(.*?)$/', $path, $m);
     if(!$m) return;
 
@@ -64,12 +64,12 @@ class API {
     header("Content-Type: {$mime}");
   }
 
-  public static function register($path, $callback){
+  public static function register(string $path, callable $callback): void {
     if(!preg_match('@^[/.a-z0-9\-_\[\]]+$@', $path)) return;
     self::$map[$path] = $callback;
   }
 
-  public static function register_paths($dynamic_path, $get_paths){
+  public static function registerPaths(string $dynamic_path, callable $get_paths): void {
     self::$paths_list[$dynamic_path] = function()use($get_paths){
       static $memo;
       if(!$memo) $memo = $get_paths();
