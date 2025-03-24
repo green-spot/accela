@@ -2,6 +2,8 @@
 
 namespace Accela;
 
+use function Accela\HtmlUtility\fixHeadNode;
+
 class PageNotFoundError extends \Exception {}
 
 class Page {
@@ -75,7 +77,7 @@ class Page {
   }
 
   public function evaluateServerComponent(string $html, array $page_props): string {
-    preg_match_all('@(<server-component\s+(.+?)>(.*?)</server-component>)@ms', $html, $m);
+    preg_match_all('@(<accela-server-component\s+(.+?)>(.*?)</accela-server-component>)@ms', $html, $m);
     foreach($m[1] as $i => $tag){
       $props_string = $m[2][$i];
       preg_match_all('/(@?[a-z0-9\-_]+)="(.+?)"/m', $props_string, $m2);

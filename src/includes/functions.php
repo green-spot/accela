@@ -1,28 +1,34 @@
 <?php
 
 namespace Accela {
+
+    use function Accela\HtmlUtility\fixHeadNode;
+
   /**
    * @param array | object $object
    * @param string $key
    * @param mixed $default
    * @return mixed
    */
-  function el(mixed $object, string $key, mixed $default=null): mixed {
-    if(is_array($object)){
+  function el(mixed $object, string $key, mixed $default = null): mixed
+  {
+    if (is_array($object)) {
       return isset($object[$key]) ? $object[$key] : $default;
-    }else{
+    } else {
       return isset($object->$key) ? $object->$key : $default;
     }
   }
 
-  function getUtime(): string {
+  function getUtime(): string
+  {
     $now = time();
-    if(defined("SERVER_LOAD_INTERVAL")) $now = $now - ($now % constant("SERVER_LOAD_INTERVAL"));
+    if (defined("SERVER_LOAD_INTERVAL")) $now = $now - ($now % constant("SERVER_LOAD_INTERVAL"));
 
     return el($_GET, "__t", "{$now}");
   }
 
-  function getInitialData(Page $page): array {
+  function getInitialData(Page $page): array
+  {
     return [
       "entrancePage" => [
         "path" => $page->path,
@@ -39,29 +45,78 @@ namespace Accela {
   /**
    * @return Component[]
    */
-  function getComponents(): array {
+  function getComponents(): array
+  {
     $components = [];
-    foreach(Component::all() as $name => $component){
+    foreach (Component::all() as $name => $component) {
       $components[$name] = $component->content;
     }
     return $components;
   }
 
-  function getHeaderHtml(Page $page): string{
+  function getHeaderHtml(Page $page): string
+  {
     $common_page = PageCommon::instance();
-    $separator = "\n<meta name=\"accela-separator\">\n";
-    return $common_page->head . $separator . $page->head;
+    return fixHeadNode($common_page->head . "\n" . $page->head);
   }
 
-  function isDynamicPath(string $path): bool {
+  function isDynamicPath(string $path): bool
+  {
     return !!preg_match("@\\[.+?\\]@", $path);
   }
 
-  function capture(callable $callback): string {
+  function capture(callable $callback): string
+  {
     ob_start();
     $callback();
     $output = ob_get_contents();
     ob_end_clean();
     return $output ?: "";
+  }
+}
+
+namespace Accela\HtmlUtility {
+  function fixHeadNode($str)
+  {
+    $dom = new \DOMDocument();
+    libxml_use_internal_errors(true);
+    $dom->loadHTML("<html><head>{$str}</head></html>");
+    libxml_clear_errors();
+
+    $head = $dom->getElementsByTagName('head')->item(0);
+
+    $elements = $head->childNodes;
+    $uniqueElements = [];
+
+    foreach ($elements as $element) {
+
+      if (!$element instanceof \DOMElement) continue;
+
+      if ($element->nodeType == XML_ELEMENT_NODE) {
+        $key = '';
+
+        if ($element->tagName == 'title') {
+          $uniqueElements['title'] = $element;
+        } else if ($element->tagName == 'meta') {
+          $name = $element->getAttribute('name');
+          $property = $element->getAttribute('property');
+
+          if ($name) {
+            $key = 'meta_name_' . $name;
+          } elseif ($property) {
+            $key = 'meta_property_' . $property;
+          } else {
+            $key = $dom->saveHTML($element);
+          }
+
+          $uniqueElements[$key] = $element;
+
+        } else {
+          $uniqueElements[$key] = $element;
+        }
+      }
+    }
+
+    return implode("", array_map(function($e)use($dom){return $dom->saveHTML($e);}, $uniqueElements));
   }
 }

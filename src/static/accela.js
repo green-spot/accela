@@ -39,7 +39,7 @@
     applyComponents: (content, components, _props={}, depth=1) => {
       if(depth > 1000) throw new Error("error!");
 
-      if(content.tagName === "COMPONENT"){
+      if(content.tagName === "ACCELA-COMPONENT"){
         const props = {};
 
         content.getAttributeNames().forEach(propName => {

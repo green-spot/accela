@@ -9,7 +9,7 @@ define("HTML_LANG", "ja");
 // define("SERVER_LOAD_INTERVAL", 60);
 
 // PageProps
-Accela::page_props("/", function(){
+Accela::pageProps("/", function(){
   return [
     "name" => "Accela",
   ];
