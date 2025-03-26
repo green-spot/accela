@@ -112,7 +112,7 @@ namespace Accela\HtmlUtility {
           $uniqueElements[$key] = $element;
 
         } else {
-          $uniqueElements[$key] = $element;
+          $uniqueElements[uniqid()] = $element;
         }
       }
     }
