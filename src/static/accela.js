@@ -194,14 +194,13 @@
             // <meta />は、存在していたら更新
             const name = o.getAttribute("name");
             const property = o.getAttribute("property");
-            const selector = (() => {
-              if(name) return `meta[name="${name}"]`;
-              if(property) return `meta[property="${property}"]`;
+            const meta = (() => {
+              if(name) return head.querySelector(`meta[name="${name}"]`);
+              if(property) return head.querySelector(`meta[property="${property}"]`);
               return false;
             })();
 
-            if(selector){
-              const meta = head.querySelector(selector);
+            if(meta){
               head.replaceChild(o, meta);
             }else{
               head.appendChild(o);
