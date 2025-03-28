@@ -179,7 +179,6 @@
             return;
           }
           if(!isDynamicTags) return;
-          if(o.classList.contains("accela-css")) return;
           o.remove();
         });
       })();
@@ -187,9 +186,34 @@
       ((div) => {
         div.innerHTML = page.head.html();
         div.querySelectorAll(":scope > *").forEach(o => {
-          head.appendChild(o);
+          if(o.tagName === "TITLE" && head.querySelector("title")){
+            // <title />は更新
+            head.querySelector("title").textContent = o.textContent;
+
+          }else if(o.tagName === "META"){
+            // <meta />は、存在していたら更新
+            const name = o.getAttribute("name");
+            const property = o.getAttribute("property");
+            const selector = (() => {
+              if(name) return `meta[name="${name}"]`;
+              if(property) return `meta[property="${property}"]`;
+              return false;
+            })();
+
+            if(selector){
+              const meta = head.querySelector(selector);
+              head.replaceChild(o, meta);
+            }else{
+              head.appendChild(o);
+            }
+
+          }else{
+            // その他のタグは追加
+            head.appendChild(o);
+          }
         });
       })(document.createElement("div"));
+
       ACCELA.changePageContent(body, pageContent.querySelector(":scope > *"));
       body.setAttribute("data-page-path", page.path);
     }
@@ -219,8 +243,10 @@
   });
 
   document.querySelector("body").addEventListener("click", e => {
-    const target = e.target;
-    if(target.tagName !== "A") return true;
+    let target = e.target;
+    if(target.tagName !== "A") target = target.closest("a");
+
+    if(!target) return true;
     if(e.metaKey || e.shiftKey || e.altKey) return true;
 
     const url = new URL(target.getAttribute("href"), location.href);

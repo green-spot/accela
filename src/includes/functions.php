@@ -57,7 +57,11 @@ namespace Accela {
   function getHeaderHtml(Page $page): string
   {
     $common_page = PageCommon::instance();
-    return fixHeadNode($common_page->head . "\n" . $page->head);
+    $style = '<style class="accela-css">' . $common_page->getCss() . '</style>';
+    $separator = '<meta name="accela-separator">';
+
+    $head = implode("\n", [$common_page->head, $style, $separator, $page->head]);
+    return fixHeadNode($head);
   }
 
   function isDynamicPath(string $path): bool

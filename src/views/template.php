@@ -6,7 +6,6 @@
 <?php endif; ?>
 <head>
 <?php echo Accela\getHeaderHtml($page); ?>
-<style class="accela-css"><?php echo (Accela\PageCommon::instance())->getCss(); ?></style>
 </head>
 <body>
 <div id="accela"></div>

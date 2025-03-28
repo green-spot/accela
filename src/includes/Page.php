@@ -2,8 +2,6 @@
 
 namespace Accela;
 
-use function Accela\HtmlUtility\fixHeadNode;
-
 class PageNotFoundError extends \Exception {}
 
 class Page {
