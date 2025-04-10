@@ -39,7 +39,11 @@ class Accela {
     }
 
     // $path_info = el($_SERVER, "PATH_INFO", "/");
-    $path_info = $path;
+    $paths = explode("/", $path);
+    $paths = array_map(function($path){
+      return strtolower(urlencode($path));
+    }, $paths);
+    $path_info = implode("/", $paths);
 
     try{
       $page = new Page($path_info);
