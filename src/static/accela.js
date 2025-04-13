@@ -154,6 +154,14 @@
     components[name] = new Component(name, component);
   });
 
+  const beforeMovePage = () => {
+    ACCELA.hooks.beforeMovePage();
+  };
+
+  const afterMovePage = () => {
+    ACCELA.hooks.beforeMovePage();
+  }
+
   const movePage = (page, hash, isFirst) => {
     if(!ACCELA.changePageContent){
       ACCELA.changePageContent = (body, pageContent) => {
@@ -221,7 +229,9 @@
       if(ACCELA.initPage) ACCELA.initPage();
       move();
     }else{
+      beforeMovePage();
       ACCELA.movePage ? ACCELA.movePage(pageContent, move) : move();
+      afterMovePage();
     }
     setTimeout(() => location.hash = hash, 100);
   };

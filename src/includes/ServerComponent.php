@@ -3,8 +3,10 @@
 namespace Accela;
 
 class ServerComponentNotFoundError extends \Exception {}
+class ServerComponentDomainNotFoundError extends \Exception {}
 
 class ServerComponent {
+  public static array $domains = [];
   public string $path;
 
   public function __construct(){
@@ -12,7 +14,17 @@ class ServerComponent {
 
   public static function load(string $component_name): ServerComponent {
     $sc = new ServerComponent();
-    $sc->path = APP_DIR . "/server-components/{$component_name}.php";
+
+    $domain = "app";
+    if(strpos($component_name, ":") !== FALSE){
+      list($domain, $component_name) = explode(":", $component_name);
+    }
+
+    if(!isset(self::$domains[$domain])){
+      throw new ServerComponentDomainNotFoundError("server component domain '{$domain}' not founds.");
+    }
+
+    $sc->path = rtrim(self::$domains[$domain], "/") . "/{$component_name}.php";
 
     if(!is_file($sc->path)){
       throw new ServerComponentNotFoundError("'{$component_name}' server component not founds.");
@@ -27,5 +39,9 @@ class ServerComponent {
     return capture(function()use($sc, $props, $content): void {
       include $sc->path;
     });
+  }
+
+  public static function registerDomain(string $domain, string $path){
+    self::$domains[$domain] = $path;
   }
 }

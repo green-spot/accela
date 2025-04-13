@@ -22,6 +22,8 @@ class PageCommon extends Page {
     $this->body = "";
 
     $this->props = PageProps::get($path);
+
+    $this->head = $this->evaluateServerComponent($this->head, $this->props);
   }
 
   public function getCss(){

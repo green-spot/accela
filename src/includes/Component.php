@@ -3,12 +3,23 @@
 namespace Accela;
 
 class ComponentNotFoundError extends \Exception {}
+class ComponentDomainNotFoundError extends \Exception {}
 
 class Component {
-  public string $content;
+  public static array $domains = [];
+  public string $content, $domain;
 
   public function __construct(string $component_name){
-    $abs_file_path = APP_DIR . "/components/{$component_name}.html";
+    $this->domain = "app";
+    if(strpos($component_name, ":") !== FALSE){
+      list($this->domain, $component_name) = explode(":", $component_name);
+    }
+
+    if(!isset(self::$domains[$this->domain])){
+      throw new ComponentDomainNotFoundError("component domain '{$this->domain}' not founds.");
+    }
+
+    $abs_file_path = rtrim(self::$domains[$this->domain], "/") . "/{$component_name}.html";
 
     if(!is_file($abs_file_path)){
       throw new ComponentNotFoundError("'{$abs_file_path}' component not founds.");
@@ -23,24 +34,34 @@ class Component {
    * @return Component[]
    */
   public static function all(): array {
-    $walk = function(string $dir, array &$components=[])use(&$walk): array {
+    $walk = function(string $domain, string $dir, array &$components=[])use(&$walk): array {
       foreach(scandir($dir) as $file){
         if(in_array($file, [".", ".."])) continue;
 
-        $file_path = $dir . $file;
+        $file_path = rtrim($dir, "/") . "/{$file}";
+
         if(is_dir($file_path)){
-          $walk("{$file_path}/", $components);
+          $walk($domain, "{$file_path}/", $components);
 
         }else if(is_file($file_path) && preg_match("@.*\\.html$@", $file)){
           $path = str_replace(".html", "", $file_path);
-          $path = str_replace(APP_DIR . '/components/', "", $path);
-          $components[$path] = new Component($path);
+          $path = str_replace(Component::$domains[$domain], "", $path);
+          $path = ltrim($path, "/");
+          $components[$domain === "app" ? $path : "{$domain}:{$path}"] = new Component("{$domain}:{$path}");
         }
       }
 
       return $components;
     };
 
-    return $walk(APP_DIR ."/components/");
+    $components = [];
+    foreach(self::$domains as $domain => $dir){
+      $components = [...$components, ...$walk($domain, $dir)];
+    }
+    return $components;
+  }
+
+  public static function registerDomain(string $domain, string $path){
+    self::$domains[$domain] = $path;
   }
 }

@@ -5,16 +5,19 @@ namespace Accela;
 class PageNotFoundError extends \Exception {}
 
 class Page {
-  public string $path, $head, $body;
+  public string $path, $head, $meta, $body;
+  public \DOMDocument $meta_dom;
   public array $props;
   public bool $is_dynamic;
+  public string | null $static_path = null;
+  private string $file_path;
 
   public function __construct(string $path){
     if(preg_match("@\\[.+\\]@", $path)){
       $path = "/404";
     }
 
-    $file_path = $path . (substr($path, -1) === "/" ? "index.html" : ".html");
+    $file_path = $this->file_path = $path . (substr($path, -1) === "/" ? "index.html" : ".html");
     $abs_file_path = APP_DIR . "/pages{$file_path}";
 
     if(!is_file($abs_file_path)){
@@ -22,14 +25,14 @@ class Page {
     }
 
     if(!is_file($abs_file_path)){
-      $static_path = $path;
-      $dynamic_path = Page::getDynamicPath($static_path);
+      $this->static_path = $path;
+      $dynamic_path = Page::getDynamicPath($this->static_path);
 
       if($dynamic_path){
         $file_path = $dynamic_path . (substr($dynamic_path, -1) === "/" ? "index.html" : ".html");
         $abs_file_path = APP_DIR . "/pages{$file_path}";
         $content = file_get_contents($abs_file_path);
-        $this->initialize($dynamic_path, $content, $static_path);
+        $this->initialize($dynamic_path, $content, $this->static_path);
         $this->is_dynamic = true;
         return;
 
@@ -49,6 +52,7 @@ class Page {
     $this->path = $path;
     $this->head = preg_replace("@^.*<head>[\s\t\n]*(.+?)[\s\t\n]*</head>.*$@s", '$1', $content);
     $this->head = preg_replace("@[ \t]+<@", "<", $this->head);
+    $this->meta = preg_replace("@^.*<accela-meta>[\s\t\n]*(.+?)[\s\t\n]*</accela-meta>.*$@s", '$1', $content);
     $this->body = preg_replace("@^.*<body>[\s\t\n]*(.+?)[\s\t\n]*</body>.*$@s", '$1', $content);
 
     // get PageProps
@@ -64,14 +68,19 @@ class Page {
       }
       $this->props = PageProps::get($path, $query);
 
-
     }else{
       $this->props = PageProps::get($path);
     }
 
     // eval ServerComponent
     $this->head = $this->evaluateServerComponent($this->head, $this->props);
+    $this->meta = $this->evaluateServerComponent($this->meta, $this->props);
     $this->body = $this->evaluateServerComponent($this->body, $this->props);
+
+    $this->meta_dom = new \DOMDocument();
+    libxml_use_internal_errors(true);
+    $this->meta_dom->loadHTML("<html><body>{$this->meta}</body></html>");
+    libxml_clear_errors();
   }
 
   public function evaluateServerComponent(string $html, array $page_props): string {

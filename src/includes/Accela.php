@@ -5,6 +5,11 @@ require_once __DIR__ . "/functions.php";
 
 class Accela {
   public static function route(string $path): void {
+    Component::registerDomain("app", APP_DIR . "/components");
+    Component::registerDomain("accela", dirname(__DIR__) . "/components");
+    ServerComponent::registerDomain("app", APP_DIR . "/server-components");
+    ServerComponent::registerDomain("accela", dirname(__DIR__) . "/server-components");
+
     if($path === "/assets/site.json"){
       if(defined("SERVER_LOAD_INTERVAL")){
         header("Cache-Control: max-age=" . constant("SERVER_LOAD_INTERVAL"));
@@ -31,6 +36,15 @@ class Accela {
       echo file_get_contents(__DIR__ . "/../static/modules.js");
       echo file_get_contents(APP_DIR . "/script.js");
       echo file_get_contents(__DIR__ . "/../static/accela.js");
+      return;
+    }
+
+    if($path === "/sitemap.xml"){
+      if(defined("SERVER_LOAD_INTERVAL")){
+        header("Cache-Control: max-age=" . constant("SERVER_LOAD_INTERVAL"));
+      }
+      header("Content-Type: application/xml");
+      require __DIR__ . "/../views/sitemap.xml.php";
       return;
     }
 
@@ -78,5 +92,4 @@ class Accela {
   public static function pagePaths(string $path, callable $getter): void {
     PagePaths::register($path, $getter);
   }
-
 }

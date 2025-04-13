@@ -2,7 +2,7 @@
 
 namespace Accela {
 
-    use function Accela\HtmlUtility\fixHeadNode;
+  use function Accela\HtmlUtility\fixHeadNode;
 
   /**
    * @param array | object $object
@@ -76,6 +76,10 @@ namespace Accela {
     $output = ob_get_contents();
     ob_end_clean();
     return $output ?: "";
+  }
+
+  function addHook(string $name, callable $callback): void {
+    Hook::add($name, $callback);
   }
 }
 
