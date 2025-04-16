@@ -4,22 +4,9 @@ use function Accela\el;
 
 $id = el($props, "id");
 
-Accela\addHook("before-body", function()use($id){
+Accela\addHook("body-start", function()use($id){
   echo "<noscript><iframe src=\"https://www.googletagmanager.com/ns.html?id={$id}\" height=\"0\" width=\"0\" style=\"display:none;visibility:hidden\"></iframe></noscript>";
 });
-
-/*
-Accela\addHook("after-move-page", function(){
-  echo <<<EOS
-window.dataLayer.push = console.log;
-window.dataLayer.push({
-  event: 'pageview',
-  page_path: window.location.pathname,
-  page_title: document.title
-});
-EOS;
-});
-*/
 ?>
 
 <script>
