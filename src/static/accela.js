@@ -260,7 +260,7 @@
 
     const url = new URL(target.getAttribute("href"), location.href);
     const path = url.pathname;
-    if(!site[path]) return true;
+    if(url.hostname !== location.hostname || !site[path]) return true;
 
     e.preventDefault();
     if(path === location.pathname){
