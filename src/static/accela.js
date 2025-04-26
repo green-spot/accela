@@ -3,6 +3,8 @@
  */
 
 (async function(){
+  ACCELA._movePage = (path) => location.href = path;
+
   const utils = {
     str2DOM: (str, wrapTagName="div") => {
       const dom = document.createElement(wrapTagName);
@@ -241,7 +243,6 @@
 
   movePage(firstPage, location.hash, true);
 
-
   const res = await fetch(`/assets/site.json?__t=${ACCELA.utime}`);
   const site = {};
 
@@ -277,5 +278,10 @@
   window.onpopstate = (e) => {
     if(e.originalEvent && !e.originalEvent.state) return;
     movePage(site[location.pathname], location.hash);
+  };
+
+  ACCELA._movePage = (path) => {
+    movePage(site[path], "");
+    history.pushState(null, null, path);
   };
 })();

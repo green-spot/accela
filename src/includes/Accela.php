@@ -32,7 +32,6 @@ class Accela {
         header("Cache-Control: max-age=" . constant("SERVER_LOAD_INTERVAL"));
       }
       header("Content-Type: text/javascript");
-      echo file_get_contents(__DIR__ . "/../static/marked.min.js");
       echo file_get_contents(__DIR__ . "/../static/modules.js");
       echo file_get_contents(APP_DIR . "/script.js");
       echo file_get_contents(__DIR__ . "/../static/accela.js");
