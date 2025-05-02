@@ -270,7 +270,7 @@
     }
 
     movePage(site[path], url.hash);
-    history.pushState(null, null, path);
+    history.pushState(null, null, path + url.search);
 
     return false;
   });
@@ -282,6 +282,6 @@
 
   ACCELA._movePage = (path) => {
     movePage(site[path], "");
-    history.pushState(null, null, path);
+    history.pushState(null, null, path + url.search);
   };
 })();

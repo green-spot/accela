@@ -4,11 +4,11 @@ namespace Accela;
 require_once __DIR__ . "/functions.php";
 
 class Accela {
+  static array $pluginModulePaths = [];
+
   public static function route(string $path): void {
-    Component::registerDomain("app", APP_DIR . "/components");
-    Component::registerDomain("accela", dirname(__DIR__) . "/components");
-    ServerComponent::registerDomain("app", APP_DIR . "/server-components");
-    ServerComponent::registerDomain("accela", dirname(__DIR__) . "/server-components");
+    self::addPlugin("app", APP_DIR);
+    self::addPlugin("accela", dirname(__DIR__));
 
     if($path === "/assets/site.json"){
       if(defined("SERVER_LOAD_INTERVAL")){
@@ -33,7 +33,10 @@ class Accela {
       }
       header("Content-Type: text/javascript");
       echo file_get_contents(__DIR__ . "/../static/modules.js");
-      echo file_get_contents(APP_DIR . "/script.js");
+      foreach(self::$pluginModulePaths as $path){
+        $path = rtrim($path, "/") . "/script.js";
+        if(file_exists($path)) echo file_get_contents($path);
+      }
       echo file_get_contents(__DIR__ . "/../static/accela.js");
       return;
     }
@@ -90,5 +93,11 @@ class Accela {
 
   public static function pagePaths(string $path, callable $getter): void {
     PagePaths::register($path, $getter);
+  }
+
+  public static function addPlugin(string $name, string $path){
+    Component::registerDomain($name, rtrim($path, "/") . "/components");
+    ServerComponent::registerDomain($name, rtrim($path, "/") . "/server-components");
+    self::$pluginModulePaths[] = $path;
   }
 }
