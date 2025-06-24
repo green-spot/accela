@@ -13,9 +13,11 @@ $dom->loadXML(Accela\capture(function(){
     usort($pages, function($x, $y) {
       return strcmp($x->path, $y->path);
     });
-    $base =
-      (el($_SERVER, "HTTPS") === "on" ? "https://" : "http://") .
-      $_SERVER["HTTP_HOST"];
+
+    $base = constant("ROOT_URL");
+    if(!$base){
+      $base = (el($_SERVER, "HTTPS") === "on" ? "https://" : "http://") . el($_SERVER, "HTTP_HOST");
+    }
   ?>
   <?php foreach($pages as $page): ?>
   <?php if($page->path === "/404") continue; ?>
